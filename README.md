@@ -1,103 +1,95 @@
 # wireshark-beaconing-analysis
 Detecting Command-and-Control Beaconing via Network Traffic Analysis
 
-🎯 Objective
+Overview
 
-you analyzed a PCAP
+This project documents a network traffic investigation conducted using a public PCAP file.
+The objective was to identify **command-and-control (C2) beaconing behavior** originating from an internal host by analyzing outbound traffic patterns, timing regularity, and protocol structure using Wireshark.
 
-goal was to identify beaconing behavior
+The analysis follows a **host-centric detection approach**, mirroring how SOC analysts investigate suspicious outbound activity in real environments.
 
-focused on outbound C2-style communication
+Objective
 
-2–3 sentences. No fluff.
+* Analyze a packet capture from a Windows enterprise network
+* Identify suspicious outbound communication indicative of beaconing
+* Isolate the affected internal host
+* Extract defensible Indicators of Compromise (IOCs)
+* Document findings in an incident-report style format
 
-🧠 Skills Demonstrated
+Skills Demonstrated
 
-This is where recruiters skim.
+* Network traffic analysis (Wireshark)
+* Host-centric investigation methodology
+* Beaconing & C2 behavior detection
+* Timing and pattern analysis
+* IOC extraction and validation
+* Incident reporting fundamentals (blue team)
 
-Examples:
-
-Network traffic analysis (Wireshark)
-
-Beaconing & C2 detection
-
-Host-centric analysis
-
-IOC extraction
-
-Incident reporting (blue team)
-
-🛠 Tools Used
+Tools & Environment
 
 Wireshark
+Public PCAP dataset from *malware-traffic-analysis.net*
 
-Public PCAP dataset (link to source site, not the file)
+Methodology
 
-🧪 Methodology (THIS IS THE MOST IMPORTANT PART)
+1. Scoping Outbound Traffic
 
-Walk through your process, not the answers.
+The analysis began by filtering traffic to focus exclusively on **internal-to-external communication**, removing:
 
-Example flow (high level):
+* Broadcast traffic
+* Multicast traffic
+* Internal-only LAN chatter
 
-Scoped internal vs external traffic
+This step reduced noise and enforced a clear trust-boundary perspective.
 
-Eliminated broadcast/multicast noise
+2. Host-Centric Analysis
 
-Pivoted to host-centric analysis
+Instead of focusing on “suspicious destinations,” traffic was evaluated **per internal host**.
 
-Identified automated outbound HTTP behavior
+Using conversation statistics, one internal host consistently appeared across outbound communications, making it a strong candidate for deeper inspection.
 
-Validated timing patterns
+Outbound conversation dominance
+![Conversations view](images/conversations.png)
 
-Extracted indicators of compromise
+3. Timing & Periodicity Analysis
 
-This section proves you understand why, not just what.
+Traffic from the suspected host was graphed over time to evaluate **regularity and automation**.
 
-🔍 Key Findings (no spoilers, no overreach)
+The I/O graph revealed **evenly spaced outbound activity**, a strong indicator of machine-driven behavior rather than human interaction.
 
-Here you state facts, not drama.
+Consistent outbound timing**
+![I/O Graph](images/io-graph.png)
 
-Examples:
+4. Protocol & Structure Validation
 
-One internal host exhibited repeated outbound HTTP requests
+Outbound HTTP traffic from the host was isolated and examined for structural consistency.
 
-Requests occurred at consistent ~4-second intervals
+Findings included:
 
-Communication targeted a single external endpoint
+* Repeated HTTP requests
+* Same destination endpoint
+* Similar request size and structure
+* Fixed timing intervals (~4 seconds)
 
-Behavior consistent with automated beaconing
+Repeated outbound HTTP requests**
+![HTTP pattern](images/http-pattern.png)
 
-Notice:
-No malware name needed. No solution leak.
+5. Flow Direction Confirmation
 
-🚨 Indicators of Compromise (sanitized)
+A TCP flow graph was used to confirm **who initiates communication** and whether the interaction follows a predictable request-response loop.
 
-List only what you can justify:
+The internal host consistently initiated outbound connections, reinforcing the beaconing hypothesis.
 
-Internal host IP
+Automated request-response flow
+![Flow graph](images/flow-graph.png)
 
-External IP
+Indicators of Compromise (IOCs)
 
-Protocol
+Indicators listed are limited to those directly observable and relevant to the identified behavior.
 
-Behavioral description
+* **Internal Host:** `10.8.15.133`
+* **External IP:** `72.5.43.29`
+* **Protocol:** HTTP
+* **Behavior:** Repeated outbound requests at fixed intervals
+* **Characteristic:** Automated, low-variance request structure
 
-You can even say:
-
-“Full indicators intentionally limited to avoid misuse.”
-
-That’s actually a good look.
-
-📝 Lessons Learned
-
-This makes it feel like a real project.
-
-Examples:
-
-Why IP rotation complicates detection
-
-Why host-centric analysis matters
-
-Why timing is more important than volume
-
-Recruiters love this section.
