@@ -1,4 +1,4 @@
-# wireshark-beaconing-analysis
+# Wireshark Beaconing Analysis
 Detecting Command-and-Control Beaconing via Network Traffic Analysis
 
 Overview
